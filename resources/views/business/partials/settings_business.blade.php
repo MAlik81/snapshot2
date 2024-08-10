@@ -19,18 +19,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('default_profit_percent', __('business.default_profit_percent') . ':*') !!} @show_tooltip(__('tooltip.default_profit_percent'))
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-plus-circle"></i>
-                    </span>
-                    {!! Form::text('default_profit_percent', @num_format($business->default_profit_percent), ['class' => 'form-control input_number']); !!}
-                </div>
-            </div>
-        </div>
-        <div class="clearfix"></div>
+        <input type="hidden" name="default_profit_percent" value="0">
+        <input type="hidden" name="currency_symbol_placement" value="before">
+        
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('currency_id', __('business.currency') . ':') !!}
@@ -42,12 +33,13 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        {{-- <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('currency_symbol_placement', __('lang_v1.currency_symbol_placement') . ':') !!}
                 {!! Form::select('currency_symbol_placement', ['before' => __('lang_v1.before_amount'), 'after' => __('lang_v1.after_amount')], $business->currency_symbol_placement, ['class' => 'form-control select2', 'required']); !!}
             </div>
-        </div>
+        </div> --}}
+        <div class="clearfix"></div>
         <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('time_zone', __('business.time_zone') . ':') !!}
@@ -59,7 +51,6 @@
                 </div>
             </div>
         </div>
-        <div class="clearfix"></div>
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('business_logo', __('business.upload_logo') . ':') !!}
@@ -67,42 +58,10 @@
                     <p class="help-block"><i> @lang('business.logo_help')</i></p>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                {!! Form::label('fy_start_month', __('business.fy_start_month') . ':') !!} @show_tooltip(__('tooltip.fy_start_month'))
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-calendar"></i>
-                    </span>
-                    {!! Form::select('fy_start_month', $months, $business->fy_start_month, ['class' => 'form-control select2', 'required']); !!}
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('accounting_method', __('business.accounting_method') . ':*') !!}
-                @show_tooltip(__('tooltip.accounting_method'))
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-calculator"></i>
-                    </span>
-                    {!! Form::select('accounting_method', $accounting_methods, $business->accounting_method, ['class' => 'form-control select2', 'required']); !!}
-                </div>
-            </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('transaction_edit_days', __('business.transaction_edit_days') . ':*') !!}
-                @show_tooltip(__('tooltip.transaction_edit_days'))
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <i class="fa fa-edit"></i>
-                    </span>
-                    {!! Form::number('transaction_edit_days', $business->transaction_edit_days, ['class' => 'form-control','placeholder' => __('business.transaction_edit_days'), 'required']); !!}
-                </div>
-            </div>
-        </div>
+        <input type="hidden" name="fy_start_month" value="6">
+        <input type="hidden" name="accounting_method" value="">
+        <input type="hidden" name="transaction_edit_days" value="0">
+        
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('date_format', __('lang_v1.date_format') . ':*') !!}
@@ -114,6 +73,7 @@
                 </div>
             </div>
         </div>
+        <div class="clearfix"></div>
         <div class="col-sm-4">
             <div class="form-group">
                 {!! Form::label('time_format', __('lang_v1.time_format') . ':*') !!}
@@ -132,12 +92,8 @@
                 {!! Form::select('currency_precision', [0 =>0, 1=>1, 2=>2, 3=>3,4=>4], $business->currency_precision, ['class' => 'form-control select2', 'required']); !!}
             </div>
         </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                {!! Form::label('quantity_precision', __('lang_v1.quantity_precision') . ':*') !!} @show_tooltip(__('lang_v1.quantity_precision_help'))
-                {!! Form::select('quantity_precision', [0 =>0, 1=>1, 2=>2, 3=>3,4=>4], $business->quantity_precision, ['class' => 'form-control select2', 'required']); !!}
-            </div>
-        </div>
+        <input type="hidden" name="quantity_precision" value="0">
+        
     </div>
      {{-- code --}}
     <div class="row hide">

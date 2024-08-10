@@ -239,6 +239,7 @@ class ModulesController extends Controller
      */
     public function uploadModule(Request $request)
     {
+
         $notAllowed = $this->moduleUtil->notAllowedInDemo();
         if (! empty($notAllowed)) {
             return $notAllowed;
@@ -251,6 +252,7 @@ class ModulesController extends Controller
             $module_name = $module->getClientOriginalName();
             $module_name = str_replace('.zip', '', $module_name);
 
+            
             //check if uploaded file is valid or not and and if not redirect back
             if ($module->getMimeType() != 'application/zip') {
                 $output = ['success' => false,
@@ -265,7 +267,6 @@ class ModulesController extends Controller
             if (! is_dir($path)) {
                 mkdir($path, 0777, true);
             }
-
             //extract the zipped file in given path
             $zip = new ZipArchive();
             if ($zip->open($module) === true) {

@@ -110,7 +110,7 @@
                         {!! Form::email('email',  $user->email, ['class' => 'form-control','placeholder' => __('business.email') ]); !!}
                     </div>
                 </div>
-                <div class="form-group col-md-6">
+                {{-- <div class="form-group col-md-6">
                     {!! Form::label('language', __('business.language') . ':') !!}
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -118,7 +118,7 @@
                         </span>
                         {!! Form::select('language',$languages, $user->language, ['class' => 'form-control select2']); !!}
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -139,7 +139,7 @@
         @endcomponent
     </div>
 </div>
-@include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
+{{-- @include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null]) --}}
 <div class="row">
     <div class="col-md-12 text-center">
         <button type="submit" class="btn btn-primary btn-big">@lang('messages.update')</button>

@@ -60,6 +60,21 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\WarrantyController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EventManagementController;
+use App\Http\Controllers\OverlayImageController;
+use App\Http\Controllers\PhotoUploadController;
+use App\Http\Controllers\EventalbumsController;
+// routes/web.php
+
+use App\Http\Controllers\EventphotosController;
+use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\FrontEndController;
+use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\CronController;
+
+
+
+// Your other routes can continue here...
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +89,9 @@ use Illuminate\Support\Facades\Route;
 
 include_once 'install_r.php';
 
+
+// Your other routes can continue here...
+
 Route::middleware(['setData'])->group(function () {
     Route::get('/', function () {
         return view('welcome');
@@ -81,10 +99,20 @@ Route::middleware(['setData'])->group(function () {
 
     Auth::routes();
 
+    // // Explicitly define routes for the ManageUserController
+    // Route::get('/users/create', [ManageUserController::class, 'create'])->name('users.create');
+    // Route::post('/users', [ManageUserController::class, 'store'])->name('users.store');
+
+
+    // Route::resource('users', ManageUserController::class);
+    Route::get('/subscription_cron', [CronController::class, 'subscriptionCron'])->name('subscription_cron');
+    Route::get('/subscription_expired', [CronController::class, 'removeExpireSubscriptionData'])->name('subscription_expired');
+    Route::get('/last_sale', [CronController::class, 'removeEventLastSaleData'])->name('last_sale');
     Route::get('/business/register', [BusinessController::class, 'getRegister'])->name('business.getRegister');
     Route::post('/business/register', [BusinessController::class, 'postRegister'])->name('business.postRegister');
     Route::post('/business/register/check-username', [BusinessController::class, 'postCheckUsername'])->name('business.postCheckUsername');
     Route::post('/business/register/check-email', [BusinessController::class, 'postCheckEmail'])->name('business.postCheckEmail');
+    Route::get('/invitations/accept/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
 
     Route::get('/invoice/{token}', [SellPosController::class, 'showInvoice'])
         ->name('show_invoice');
@@ -103,6 +131,61 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('service-staff-availability', [SellPosController::class, 'showServiceStaffAvailibility']);
     Route::get('pause-resume-service-staff-timer/{user_id}', [SellPosController::class, 'pauseResumeServiceStaffTimer']);
     Route::get('mark-as-available/{user_id}', [SellPosController::class, 'markAsAvailable']);
+    // Route::get('/users', [ManageUserController::class, 'index'])->name('users.index');
+    // Route::get('/users/{user}', [ManageUserController::class, 'show'])->name('users.show');
+    // Route::get('/users/{user}/edit', [ManageUserController::class, 'edit'])->name('users.edit');
+    // Route::put('/users/{user}', [ManageUserController::class, 'update'])->name('users.update');
+    // Route::delete('/users/{user}', [ManageUserController::class, 'destroy'])->name('users.destroy');
+    // Route::prefix('event-management')->group(function () {
+    //     Route::get('/', [EventManagementController::class, 'index'])->name('event-management.index');
+    //     Route::get('/create', [EventManagementController::class, 'create'])->name('event-management.create');
+    //     Route::post('/store', [EventManagementController::class, 'store'])->name('event-management.store');
+    //     Route::get('/edit/{id}', [EventManagementController::class, 'edit'])->name('event-management.edit');
+    //     Route::post('/update', [EventManagementController::class, 'update'])->name('event-management.update');
+    //     // Add more routes as needed for event creation, authorization, etc.
+    // });
+// routes/web.php
+
+    Route::resource('users', ManageUserController::class);
+    Route::get('/event-albums-show/{album_id}', [EventalbumsController::class, 'show']);
+    Route::resource('event-albums', EventalbumsController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('event-management', EventManagementController::class);
+
+    // Assuming your route prefix is 'event-management'
+    Route::post('event-management/photo-discount-setting', [EventManagementController::class, 'storePhotoDiscountSetting'])->name('event-management.photo-discount-setting.store');
+    Route::post('event-management/freelancer', [EventManagementController::class, 'addFreelancer'])->name('event-management.freelancer.store');
+    Route::post('event-management/freelancer-invite', [EventManagementController::class, 'inviteFreelanceUser'])->name('event-management.freelancer.invite');
+    Route::post('event-management/affiliate', [EventManagementController::class, 'addAffiliate'])->name('event-management.affiliate.store');
+    Route::post('/upload-cover', [EventManagementController::class, 'uploadCover'])->name('event-management.upload-cover');
+    Route::post('/add_collaborator', [EventManagementController::class, 'addCollaborator'])->name('add_collaborator');
+    Route::get('/remove-collaborator/{event_id}/{user_id}', [EventManagementController::class, 'removeCollaborator'])->name('remove-collaborator');
+    Route::get('/fetch-collaborator/{event_id}/{user_id}', [EventManagementController::class, 'getCollaborator'])->name('fetch-collaborator');
+    
+    // routes/web.php
+    Route::get('/invitations/create/{event_id}', [InvitationController::class, 'create'])->name('invitations.create');
+    Route::post('/invitations/store', [InvitationController::class, 'store'])->name('invitations.store');
+
+
+    // Route::put('event-management/photo-discount-setting/{id}', [EventManagementController::class, 'storePhotoDiscountSetting'])
+    //     ->name('event-management.photo-discount-setting.update');
+    Route::post('overlay/upload', [OverlayImageController::class, 'upload'])->name('overlay.upload');
+    Route::post('/upload-image/{album_id}', [EventphotosController::class, 'upload'])->name('upload.image');
+    Route::post('/delete_photo', [EventphotosController::class, 'destroy'])->name('eventphotos.destroy');
+    Route::get('/create_collection', [EventphotosController::class, 'createCollection'])->name('eventphotos.createCollection');
+    Route::get('/protected-images/{album_id}', [EventphotosController::class, 'protectedImages'])->name('eventphotos.protected');
+    Route::post('/get-protected-images', [EventphotosController::class, 'searchSimilarImages'])->name('eventphotos.getprotected');
+    Route::post('/delete_photo_by_id', [EventphotosController::class, 'deletePhotoById'])->name('eventphotos.delete_photo_by_id');
+    Route::get('/withdrawals', [WithdrawalController::class, 'index'])->name('withdrawals');
+    Route::get('/withdrawals/request-create', [WithdrawalController::class, 'requestCreate'])->name('withdrawals.request-create');
+    Route::post('/withdrawals/request-store', [WithdrawalController::class, 'requestStore'])->name('withdrawals.request-store');
+    Route::get('/withdrawl-requests', [WithdrawalController::class, 'withdrawlRequests'])->name('withdrawl-requests');
+    Route::post('/withdrawl-requests/send-withdraw', [WithdrawalController::class, 'sendRequestedWithdraw'])->name('withdrawl-requests.send-withdraw');
+    Route::post('/withdrawals/decline', [WithdrawalController::class, 'decline'])->name('withdrawals.decline');
+    Route::post('/withdrawals/approve', [WithdrawalController::class, 'approve'])->name('withdrawals.approve');
+
+    
+
+
 
     Route::resource('purchase-requisition', PurchaseRequisitionController::class)->except(['edit', 'update']);
     Route::post('/get-requisition-products', [PurchaseRequisitionController::class, 'getRequisitionProducts'])->name('get-requisition-products');
@@ -129,7 +212,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::resource('brands', BrandController::class);
 
-    Route::resource('payment-account', 'PaymentAccountController');
+    // Route::resource('payment-account', 'PaymentAccountController');
 
     Route::resource('tax-rates', TaxRateController::class);
 
@@ -236,7 +319,6 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     Route::resource('roles', RoleController::class);
 
-    Route::resource('users', ManageUserController::class);
 
     Route::resource('group-taxes', GroupTaxController::class);
 
@@ -460,7 +542,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::resource('warranties', WarrantyController::class);
 
     Route::resource('dashboard-configurator', DashboardConfiguratorController::class)
-    ->only(['edit', 'update']);
+        ->only(['edit', 'update']);
 
     Route::get('view-media/{model_id}', [SellController::class, 'viewMedia']);
 
@@ -512,4 +594,48 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone'])
         ->name('packing.downloadPdf');
     Route::get('/sells/invoice-url/{id}', [SellPosController::class, 'showInvoiceUrl']);
     Route::get('/show-notification/{id}', [HomeController::class, 'showNotification']);
+});
+
+
+
+Route::get('/front', [FrontEndController::class, 'home'])->name('front');
+Route::get('/find-photos', [FrontEndController::class, 'findPhotos'])->name('find-photos');
+Route::get('/event-photos/{event_id}/{album_id}', [FrontEndController::class, 'eventPhotos'])->name('event-photos');
+Route::get('/front-signup', [FrontEndController::class, 'signup'])->name('front-signup');
+Route::get('/front-signup-front', [FrontEndController::class, 'signupFront'])->name('front-signup-front');
+Route::get('/front-login', [FrontEndController::class, 'login'])->name('front-login');
+Route::get('/front-logout', [FrontEndController::class, 'logout'])->name('front-logout');
+Route::get('/cart', [FrontEndController::class, 'cart'])->name('cart');
+Route::get('/checkout', [FrontEndController::class, 'checkout'])->name('checkout');
+Route::get('/front-user-profile', [FrontEndController::class, 'userProfile'])->name('front-user-profile');
+Route::get('/order-confirmation', [FrontEndController::class, 'orderConfirmation'])->name('order-confirmation');
+Route::get('/photographer', [FrontEndController::class, 'buySubscription'])->name('photographer');
+Route::get('/contact-us', [FrontEndController::class, 'frontContactUs'])->name('contact-us');
+Route::post('/contact-us', [FrontEndController::class, 'postContactUs'])->name('contact-us');
+Route::post('/post-signup', [FrontEndController::class, 'postSignUp'])->name('post-signup');
+Route::post('/post-login', [FrontEndController::class, 'postLogin'])->name('post-login');
+Route::post('/post-forgot', [FrontEndController::class, 'postForgot'])->name('post-forgot');
+Route::post('/download-image', [FrontEndController::class, 'downloadImage'])->name('download.image');
+
+Route::post('/update_profile', [FrontEndController::class, 'updateProfile'])->name('update_profile');
+Route::post('/get-event-photos', [FrontEndController::class, 'getEventAlbumPhotos'])->name('get-event-photos');
+Route::post('/get-events', [FrontEndController::class, 'getEvents'])->name('get-events');
+Route::post('/update_cart', [FrontEndController::class, 'updateCart'])->name('update_cart');
+Route::post('/delete_cart', [FrontEndController::class, 'deleteCart'])->name('delete_cart');
+Route::get('/clear_cart', [FrontEndController::class, 'clearCart'])->name('clear_cart');
+Route::post('/submit-reset', [FrontEndController::class, 'reset'])->name('submit-reset');
+
+// Define routes for checkout and payment processing
+// Route::get('/checkout', [CheckoutController::class, 'showCheckoutForm'])->name('checkout');
+Route::post('/checkout/process', [FrontEndController::class, 'processPayment'])->name('checkout.process');
+Route::get('/checkout/success', [FrontEndController::class, 'checkoutSuccess'])->name('checkout.success');
+Route::get('/checkout/failure', [FrontEndController::class, 'checkoutFailure'])->name('checkout.failure');
+
+Route::get('/about-us', [FrontEndController::class, 'aboutUs'])->name('about-us');
+Route::get('/terms-and-conditions', [FrontEndController::class, 'termsAndConditions'])->name('terms-and-conditions');
+Route::get('/privacy-policy', [FrontEndController::class, 'PrivacyPolicy'])->name('privacy-policy');
+Route::get('/faq', [FrontEndController::class, 'FAQforPhotographers'])->name('faq');
+
+Route::get('/test-session', function(){
+    echo json_encode(session()->all());
 });

@@ -1,4 +1,5 @@
 @php
+
   $all_notifications = auth()->user()->notifications;
   $unread_notifications = $all_notifications->where('read_at', null);
   $total_unread = count($unread_notifications);

@@ -1,3 +1,4 @@
+<link href='https://fonts.googleapis.com/css?family=Outfit' rel='stylesheet'>
 <link rel="stylesheet" href="{{ asset('css/vendor.css?v='.$asset_v) }}">
 
 @if( in_array(session()->get('user.language', config('app.locale')), config('constants.langs_rtl')) )
@@ -73,3 +74,18 @@
 @if(!empty($__system_settings['additional_css']))
     {!! $__system_settings['additional_css'] !!}
 @endif
+<style>
+	.box-title{
+		font-family: 'Outfit';
+	}
+	body {
+		background-color: #D89623;
+		font-family: 'Outfit' !important;
+	}
+	.right-col{
+		background-color: #1E1832;
+	}
+	.wizard > .content{
+		background-color: #1E1832 !important;
+	}
+</style>

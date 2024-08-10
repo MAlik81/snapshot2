@@ -60,10 +60,23 @@ class LoginController extends Controller
      *
      * @return void
      */
+    // public function username()
+    // {
+    //     return 'username';
+    // }
     public function username()
-    {
-        return 'username';
-    }
+{
+    // dd(request()->input('username'));
+    $login_type = filter_var(request()->input('username'), FILTER_VALIDATE_EMAIL)
+        ? 'email'
+        : 'username';
+    // dd($login_type);
+    request()->merge([
+        $login_type => request()->input('username')
+    ]);
+    // dd($login_type);
+    return $login_type;
+}
 
     public function logout()
     {

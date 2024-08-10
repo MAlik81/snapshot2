@@ -17,6 +17,11 @@ class VerifyCsrfToken extends BaseVerifier
         '/install/install-alternate',
         '/api/ecom/customers',
         '/api/ecom/orders',
-        '/webhook/*'
+        '/webhook/*',
+        '/get-event-photos',
+        '/get-events',
+        '/update_cart',
+        '/delete_cart',
+        '/clear_cart',
     ];
 }

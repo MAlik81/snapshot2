@@ -20,7 +20,7 @@
     <![endif]-->
     <style>
             body {
-                background-color: #243949;
+                background-color: #1E1832;
             }
             h1 {
                 color: #fff;

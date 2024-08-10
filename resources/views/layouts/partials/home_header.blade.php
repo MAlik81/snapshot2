@@ -21,9 +21,9 @@
                 <li><a href="{{ action([\Modules\Superadmin\Http\Controllers\PageController::class, 'showPage'], $page->slug) }}">{{$page->title}}</a></li>
             @endforeach
         @endif
-        @if(Route::has('pricing') && config('app.env') != 'demo')
+        {{-- @if(Route::has('pricing') && config('app.env') != 'demo')
         <li><a href="{{ action([\Modules\Superadmin\Http\Controllers\PricingController::class, 'index']) }}">@lang('superadmin::lang.pricing')</a></li>
-        @endif
+        @endif --}}
         @if(Route::has('repair-status'))
         <li>
           <a href="{{ action([\Modules\Repair\Http\Controllers\CustomerRepairStatusController::class, 'index']) }}">

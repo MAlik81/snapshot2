@@ -36,12 +36,28 @@ class BusinessUtil extends Util
         ]);
         $user->assignRole($role->name);
 
-        //Create Cashier role for a new business
-        $cashier_role = Role::create(['name' => 'Cashier#'.$business_id,
+        //Create collaborator role for a new business
+        $collaborator_role = Role::create(['name' => 'Collaborator#'.$business_id,
             'business_id' => $business_id,
             'guard_name' => 'web',
         ]);
-        $cashier_role->syncPermissions(['sell.view', 'sell.create', 'sell.update', 'sell.delete', 'access_all_locations', 'view_cash_register', 'close_cash_register']);
+        $collaborator_role->syncPermissions([
+            'event.view',
+            'event.create',
+            'event.update',
+            'event.delete',
+            'event.manage',
+            'event_albums.view',
+            'event_albums.create',
+            'event_albums.update',
+            'event_albums.delete',
+            'event_photos.view',
+            'event_photos.create',
+            'event_photos.update',
+            'event_photos.delete',
+            'minor_photos.view',
+            'minor_photos.delete',
+        ]);
 
         $business = Business::findOrFail($business_id);
 
@@ -313,6 +329,11 @@ class BusinessUtil extends Util
                 'account' => null,
             ];
         }
+        $location_details['landmark'] = null;
+        $location_details['city'] = null;
+        $location_details['state'] = null;
+        $location_details['zip_code'] = null;
+        $location_details['country'] = null;
         $location = BusinessLocation::create(['business_id' => $business_id,
             'name' => $location_details['name'],
             'landmark' => $location_details['landmark'],

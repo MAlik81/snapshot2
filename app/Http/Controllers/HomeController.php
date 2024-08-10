@@ -18,7 +18,13 @@ use Datatables;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
-
+use Modules\Superadmin\Entities\Subscription;
+use Modules\Superadmin\Entities\Package;
+use App\Withdrawals;
+use App\PhotosSalesRecord;
+use App\Business;
+use Carbon\Carbon;
+use App\Event;
 class HomeController extends Controller
 {
     /**
@@ -58,19 +64,34 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         if ($user->user_type == 'user_customer') {
             return redirect()->action([\Modules\Crm\Http\Controllers\DashboardController::class, 'index']);
         }
-
+        $is_super_admin = false;
+        $administrator_list = config('constants.administrator_usernames');
+        if (!empty($request->user()) && in_array(strtolower($request->user()->username), explode(',', strtolower($administrator_list)))) {
+            $is_super_admin = true;
+        }
         $business_id = request()->session()->get('user.business_id');
-
+        $active = Subscription::active_subscription($business_id);
+        
         $is_admin = $this->businessUtil->is_admin(auth()->user());
-
+        $response_array = array('success' => 1);
+        if (!$this->moduleUtil->isSubscribed($business_id)) {
+            $response_array = ['success' => 0,
+            'msg' => __(
+                'superadmin::lang.subscription_expired_toastr',
+                ['app_name' => config('app.name'),
+                    'subscribe_url' => action([\Modules\Superadmin\Http\Controllers\SubscriptionController::class, 'index']),
+                ]
+            ),
+        ];
+        }
         if (! auth()->user()->can('dashboard.data')) {
-            return view('home.index');
+            return view('home.index')->with('response_array', $response_array);
         }
 
         $fy = $this->businessUtil->getCurrentFinancialYear($business_id);
@@ -123,20 +144,42 @@ class HomeController extends Controller
         $sells_chart_1 = new CommonChart;
 
         $sells_chart_1->labels($labels)
-                        ->options($this->__chartOptions(__(
-                            'home.total_sells',
-                            ['currency' => $currency->code]
-                            )));
-
-        if (! empty($location_sells)) {
-            foreach ($location_sells as $location_sell) {
-                $sells_chart_1->dataset($location_sell['loc_label'], 'line', $location_sell['values']);
-            }
+                      ->options($this->__chartOptions(__(
+                          'home.total_sells',
+                          ['currency' => $currency->symbol]
+                      )));
+        
+        $your_sales_30_days_stats = PhotosSalesRecord::select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(net_amount) as total_amount'))
+                                                      ->where('created_at', '>=', Carbon::now()->subDays(30))
+                                                      ->where('business_id', $business_id)
+                                                      ->groupBy(DB::raw('DATE(created_at)'))
+                                                      ->get();
+        
+        $your_sales_30_days_labels = $your_sales_30_days_stats->pluck('date')->toArray();
+        $your_sales_30_days_amounts = $your_sales_30_days_stats->pluck('total_amount')->toArray();
+        
+        $sells_chart_1->labels($your_sales_30_days_labels)
+                      ->dataset('Your Sales Last 30 Days', 'line', $your_sales_30_days_amounts);
+        
+        // Only for super admins
+        if ($is_super_admin) {
+            // Retrieve sales stats from photos for the last 30 days
+            $platform_sales_30_days_stats = PhotosSalesRecord::select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(net_amount) as total_amount'))
+                                                             ->where('created_at', '>=', Carbon::now()->subDays(30))
+                                                             ->groupBy(DB::raw('DATE(created_at)'))
+                                                             ->get();
+        
+            // Extract labels and amounts from the stats
+            $platform_sales_30_days_labels = $platform_sales_30_days_stats->pluck('date')->toArray();
+            $platform_sales_30_days_amounts = $platform_sales_30_days_stats->pluck('total_amount')->toArray();
+        
+            // Add a dataset for Platform Sales Last 30 Days using the stats
+            $sells_chart_1->labels($platform_sales_30_days_labels)
+                          ->dataset('Platform Sales Last 30 Days', 'line', $platform_sales_30_days_amounts);
         }
+        
+        
 
-        if (count($all_locations) > 1) {
-            $sells_chart_1->dataset(__('report.all_locations'), 'line', $all_sell_values);
-        }
 
         $labels = [];
         $values = [];
@@ -205,7 +248,36 @@ class HomeController extends Controller
 
         $common_settings = ! empty(session('business.common_settings')) ? session('business.common_settings') : [];
 
-        return view('home.index', compact('sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin'));
+        
+
+
+    $sales_stats = Business::select('business.id', 'business.name')
+    ->selectRaw('(SELECT SUM(net_amount) FROM photo_sales WHERE photo_sales.business_id = business.id) as total_net_amount')
+    ->selectRaw('(SELECT SUM(platform_share) FROM photo_sales WHERE photo_sales.business_id = business.id) as total_platform_share')
+    ->selectRaw('(SELECT SUM(vendor_share) FROM photo_sales WHERE photo_sales.business_id = business.id) as total_vendor_share')
+    ->selectRaw('(SELECT COALESCE(SUM(requested_amount), 0) FROM vendor_withdrawals WHERE vendor_withdrawals.business_id = business.id AND vendor_withdrawals.status = "pending") as pending_requested_amount')
+    ->selectRaw('(SELECT COALESCE(SUM(requested_amount), 0) FROM vendor_withdrawals WHERE vendor_withdrawals.business_id = business.id AND vendor_withdrawals.status = "approved") as approved_requested_amount')
+    ->selectRaw('(SELECT COALESCE(SUM(requested_amount), 0) FROM vendor_withdrawals WHERE vendor_withdrawals.business_id = business.id AND vendor_withdrawals.status = "declined") as declined_requested_amount')
+    ->selectRaw('(SELECT SUM(vendor_share) FROM photo_sales WHERE photo_sales.business_id = business.id) - 
+                 (SELECT COALESCE(SUM(requested_amount), 0) FROM vendor_withdrawals WHERE vendor_withdrawals.business_id = business.id AND vendor_withdrawals.status = "approved") as remaining_with_vendor_share')
+    ->get();
+
+    $platform_total_withdrawn = Withdrawals::where('status', 'approved')->sum('requested_amount');
+    $platform_pending_withdrawals = Withdrawals::where('status', 'pending')->sum('requested_amount');
+    $platform_net_amount = PhotosSalesRecord::sum('platform_share');
+    $vendors_net_amount = PhotosSalesRecord::sum('vendor_share');
+    $platform_total_amount = PhotosSalesRecord::sum('net_amount');
+
+
+    $vendor_total_withdrawn = Withdrawals::where('business_id', $business_id)->where('status', 'approved')->sum('requested_amount');
+    $vendor_pending_withdrawals = Withdrawals::where('business_id', $business_id)->where('status', 'pending')->sum('requested_amount');
+    $vendor_net_amount = PhotosSalesRecord::where('business_id', $business_id)->sum('vendor_share');
+    $vendor_platform_share = PhotosSalesRecord::where('business_id', $business_id)->sum('platform_share');
+    $vendor_total_amount = PhotosSalesRecord::where('business_id', $business_id)->sum('net_amount');
+
+    $events = Event::where('business_id',$business_id)->count();
+
+        return view('home.index', compact('currency','sells_chart_1', 'sells_chart_2', 'widgets', 'all_locations', 'common_settings', 'is_admin','is_super_admin','sales_stats','vendor_total_withdrawn','vendor_pending_withdrawals','vendor_net_amount','vendor_total_amount','platform_total_withdrawn','platform_pending_withdrawals','platform_net_amount','platform_total_amount','vendors_net_amount','vendor_platform_share','events','response_array'));
     }
 
     /**

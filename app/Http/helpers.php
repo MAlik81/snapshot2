@@ -1,4 +1,7 @@
 <?php
+use Modules\Superadmin\Entities\Subscription;
+use Modules\Superadmin\Entities\Package;
+use App\EventAlbumPhotos;
 
 /**
  * boots pos.
@@ -39,16 +42,16 @@ function pos_boot($ul, $pt, $lc, $em, $un, $type = 1, $pid = null)
     if ($result) {
         $result = json_decode($result, true);
 
-        if ($result['flag'] == 'valid') {
-            // if(!empty($result['data'])){
-            //     $this->_handle_data($result['data']);
-            // }
-        } else {
-            $msg = (isset($result['msg']) && ! empty($result['msg'])) ? $result['msg'] : 'I'.'nvali'.'d '.'Lic'.'ense Det'.'ails';
+        // if ($result['flag'] == 'valid') {
+        //     // if(!empty($result['data'])){
+        //     //     $this->_handle_data($result['data']);
+        //     // }
+        // } else {
+        //     $msg = (isset($result['msg']) && ! empty($result['msg'])) ? $result['msg'] : 'I'.'nvali'.'d '.'Lic'.'ense Det'.'ails';
 
-            return redirect()->back()
-                ->with('error', $msg);
-        }
+        //     return redirect()->back()
+        //         ->with('error', $msg);
+        // }
     }
 }
 
@@ -65,6 +68,36 @@ if (! function_exists('humanFilesize')) {
         }
 
         return round($size, $precision).$units[$i];
+    }
+}
+if (! function_exists('checkActiveSub')) {
+    function checkActiveSub($business_id)
+    {
+        $active = Subscription::active_subscription($business_id);
+        if(!$active){
+            return false;
+        }else{
+            return true;
+        }
+    }
+}
+if (! function_exists('checkIfDataRemaining')) {
+    function checkIfDataRemaining($business_id)
+    {
+        $package = Subscription::active_subscription($business_id);
+        if(!$package){
+            return false;
+        }else{
+            $aws_storage = isset($package->package_details['aws_storage']) ? $package->package_details['aws_storage'] : 0;
+            $used_storage = EventAlbumPhotos::where('business_id', $business_id)->sum('size');
+            $total_storage = $aws_storage*1024;
+            $used_storage = $used_storage / 1024;
+            if($used_storage < $total_storage){
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }
 

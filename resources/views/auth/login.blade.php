@@ -2,6 +2,17 @@
 @section('title', __('lang_v1.login'))
 
 @section('content')
+    <style>
+
+    .bg-custom-button {
+        background-color: #D89623;
+        color: #fff;
+        padding: 10px 30px;
+    }
+    </style>
+    @php
+        echo (json_encode(session()->all()))
+    @endphp
     <div class="login-form col-md-12 col-xs-12 right-col-content">
         <p class="form-header text-white">@lang('lang_v1.login')</p>
         <form method="POST" action="{{ route('login') }}" id="login-form">
@@ -59,7 +70,7 @@
             </div>
             <br>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-flat btn-login">@lang('lang_v1.login')</button>
+                <button type="submit" class="btn btn-flat btn-login bg-custom-button">@lang('lang_v1.login')</button>
                 @if(config('app.env') != 'demo')
                 <a href="{{ route('password.request') }}" class="pull-right">
                     @lang('lang_v1.forgot_your_password')

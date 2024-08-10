@@ -4,6 +4,15 @@
 
 @section('content')
 
+<style>
+
+    .bg-custom-button {
+        background-color: #D89623;
+        color: #fff;
+        padding: 10px 30px;
+    }
+    </style>
+
 <div class="login-form col-md-12 col-xs-12 right-col-content">
 
     @if(session('status') && is_string(session('status')))
@@ -23,7 +32,7 @@
         </div>
         <br>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block btn-flat">
+            <button type="submit" class="btn bg-custom-button btn-block btn-flat">
                 @lang('lang_v1.send_password_reset_link')
             </button>
         </div>

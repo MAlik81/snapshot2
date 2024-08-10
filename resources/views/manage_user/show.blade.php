@@ -93,7 +93,7 @@
                                     <div class="col-md-6">
                                             <p><strong>@lang( 'lang_v1.cmmsn_percent' ): </strong> {{$user->cmmsn_percent}}%</p>
                                     </div>
-                                    <div class="col-md-6">
+                                    {{-- <div class="col-md-6">
                                         @php
                                             $selected_contacts = ''
                                         @endphp
@@ -118,10 +118,10 @@
                                             <strong>@lang( 'lang_v1.allowed_contacts' ): </strong>
                                                 {{$selected_contacts}}
                                         </p>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
-                            @include('user.show_details')
+                            {{-- @include('user.show_details') --}}
                         </div>
                         <div class="tab-pane" id="documents_and_notes_tab">
                             <!-- model id like project_id, user_id -->

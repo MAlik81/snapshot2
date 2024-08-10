@@ -3,6 +3,14 @@
 @section('title', __('lang_v1.reset_password'))
 
 @section('content')
+<style>
+
+.bg-custom-button {
+    background-color: #D89623;
+    color: #fff;
+    padding: 10px 30px;
+}
+</style>
 <div class="login-form col-md-12 col-xs-12 right-col-content">
     <form method="POST" action="{{ route('password.request') }}">
         {{ csrf_field() }}
@@ -38,7 +46,7 @@
         </div>
         <br>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block btn-flat">@lang('lang_v1.reset_password')</button>
+            <button type="submit" class="btn bg-custom-button btn-block btn-flat">@lang('lang_v1.reset_password')</button>
             <!-- /.col -->
         </div>
     </form>

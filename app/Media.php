@@ -108,21 +108,22 @@ class Media extends Model
         }
 
         //check if base64
-        if (! empty($request->$file_name) && ! is_array($request->$file_name)) {
+        if (! empty($request->$file_name) && ! is_array($request->$file_name) && empty($uploaded_files)) {
             $base64_array = explode(',', $request->$file_name);
 
             $base64_string = $base64_array[1] ?? $base64_array[0];
-
+            // dd(Media::is_base64($base64_string));
             if (Media::is_base64($base64_string)) {
                 $uploaded_files[] = Media::uploadBase64Image($base64_string);
             }
         }
-
+        // dd($request);
         if (! empty($uploaded_files)) {
             //If one to one relationship upload single file
             if ($is_single) {
                 $uploaded_files = $uploaded_files[0];
             }
+            // dd($uploaded_files);
             // attach media to model
             Media::attachMediaToModel($model, $business_id, $uploaded_files, $request, $model_media_type);
         }
@@ -141,7 +142,8 @@ class Media extends Model
         $file_name = null;
         if ($file->getSize() <= config('constants.document_size_limit')) {
             $new_file_name = time().'_'.mt_rand().'_'.$file->getClientOriginalName();
-            if ($file->storeAs('/media', $new_file_name)) {
+            
+            if ($file->move(public_path('uploads/media'), $new_file_name)) {
                 $file_name = $new_file_name;
             }
         }
@@ -189,6 +191,7 @@ class Media extends Model
 
     public static function attachMediaToModel($model, $business_id, $uploaded_files, $request = null, $model_media_type = null)
     {
+        // dd($model, $business_id, $uploaded_files, $request = null, $model_media_type = null);
         if (! empty($uploaded_files)) {
             if (is_array($uploaded_files)) {
                 $media_obj = [];

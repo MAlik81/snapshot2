@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Aws\S3\S3Client;
 
 class User extends Authenticatable
 {
@@ -87,6 +88,7 @@ class User extends Authenticatable
             'email' => $details['email'],
             'password' => Hash::make($details['password']),
             'language' => ! empty($details['language']) ? $details['language'] : 'en',
+            'camera_details' => $details['camera_details'],
         ]);
 
         return $user;
@@ -321,4 +323,33 @@ class User extends Authenticatable
 
         return $img_src;
     }
+    public function createBucket()
+    {
+        $s3Client = new S3Client([
+            'version' => 'latest',
+            'region' => config('filesystems.disks.s3.region'),
+            'credentials' => [
+                'key' => config('filesystems.disks.s3.key'),
+                'secret' => config('filesystems.disks.s3.secret'),
+            ],
+        ]);
+
+        // Generate a unique bucket name, for example, based on user ID
+        $bucketName = 'snap.shot.user-' . $this->id . '-bucket';
+
+        // Create the S3 bucket
+        $s3Client->createBucket([
+            'Bucket' => $bucketName,
+        ]);
+
+        // Store the bucket information in the database
+        $this->update(['bucket_name' => $bucketName]);
+
+        // Set user-specific S3 configuration for subsequent operations
+        config(['filesystems.disks.s3.bucket' => $bucketName]);
+    }
 }
+
+// app/Models/User.php
+
+

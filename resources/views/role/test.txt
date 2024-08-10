@@ -1,0 +1,14 @@
+Team member: A team member works under a commission/set percentage of sales:
+  As an Event Manager you can select to invite photographers to be team members. 
+  Team members can either be paid a percentage of the sales. 
+  The Event Manager can select the individual percentage for each team member. 
+  The total percentage for the event will need to add up to 100%. Percentages do not have to be even. 
+  Team members have access to view sales. 
+  As an event manager you can set how long you wait to see the total sales 
+
+Event manager: Team Managers have the capability to invite photographers to there event.
+  Each photographer that has been invited will fall under the Event Manager. 
+  They can create events with the Easy to Use event management area.
+  Select whether they assign Freelancers or Team Members.
+  Event Managers have full control over who sees what.
+  The presets for Freelancers and Team managers can also be customised by request.

@@ -14,6 +14,7 @@
         <!-- <link href="https://fonts.googleapis.com/css?family=Raleway:100,300,600" rel="stylesheet" type="text/css"> -->
         
         <link rel="stylesheet" href="{{ asset('css/vendor.css') }}">
+        <link href='https://fonts.googleapis.com/css?family=Outfit' rel='stylesheet'>
 
         <!-- Styles -->
         <style>
@@ -44,7 +45,7 @@
         </style>
     </head>
 
-    <body>
+    <body style="font-family: 'Outfit';">
         @include('layouts.partials.home_header')
         <div class="container">
             <div class="content">

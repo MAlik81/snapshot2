@@ -15,7 +15,8 @@
   border-right: 1px solid #eee;
 }
 .skin-black .main-header .navbar {
-  background-color: #ffffff;
+  
+  background-color: #070707;
 }
 .skin-black .main-header .navbar .nav > li > a {
   color: #333333;
@@ -27,7 +28,8 @@
 .skin-black .main-header .navbar .nav .open > a:hover,
 .skin-black .main-header .navbar .nav .open > a:focus,
 .skin-black .main-header .navbar .nav > .active > a {
-  background: #ffffff;
+  
+  background: #070707;
   color: #999999;
 }
 .skin-black .main-header .navbar .sidebar-toggle {
@@ -35,7 +37,8 @@
 }
 .skin-black .main-header .navbar .sidebar-toggle:hover {
   color: #999999;
-  background: #ffffff;
+  
+  background: #070707;
 }
 .skin-black .main-header .navbar > .sidebar-toggle {
   color: #333;
@@ -50,7 +53,8 @@
   border-right-width: 0;
 }
 .skin-black .main-header .logo {
-  background-color: #ffffff;
+  
+  background-color: #070707;
   color: #333333;
   border-bottom: 0 solid transparent;
   border-right: 1px solid #eee;

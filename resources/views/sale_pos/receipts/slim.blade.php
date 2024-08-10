@@ -730,7 +730,7 @@ body {
 @media print {
 	* {
     	font-size: 12px;
-    	font-family: 'Times New Roman';
+    	font-family: 'Outfit';
     	word-break: break-all;
 	}
 	.f-8 {

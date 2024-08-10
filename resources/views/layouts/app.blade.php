@@ -31,10 +31,13 @@
         @include('layouts.partials.css')
 
         @yield('css')
+        {{-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"> --}}
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+
     </head>
 
-    <body class="@if($pos_layout) hold-transition lockscreen @else hold-transition skin-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'blue-light'}}@endif sidebar-mini @endif">
-        <div class="wrapper thetop">
+    <body class="@if($pos_layout) hold-transition lockscreen @else hold-transition skin-@if(!empty(session('business.theme_color'))){{session('business.theme_color')}}@else{{'blue-light'}}@endif sidebar-mini @endif"  style="font-family: 'Outfit';">
+        <div class="wrapper thetop" style="height: 1000px !important;">
             <script type="text/javascript">
                 if(localStorage.getItem("upos_sidebar_collapse") == 'true'){
                     var body = document.getElementsByTagName("body")[0];
@@ -128,6 +131,13 @@
                 @includeIf($additional_view)
             @endforeach
         @endif
+        <script>
+            $(document).ready(function() {
+                setTimeout(function() {
+                    $(".content-wrapper").css("min-height", "1000px");
+                }, 1000);
+            });
+        </script>
     </body>
 
 </html>

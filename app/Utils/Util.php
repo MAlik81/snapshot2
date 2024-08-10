@@ -704,7 +704,9 @@ class Util
 
             if ($request->$file_name->getSize() <= config('constants.document_size_limit')) {
                 $new_file_name = time().'_'.$request->$file_name->getClientOriginalName();
-                if ($request->$file_name->storeAs($dir_name, $new_file_name)) {
+
+                // $imagePath = $request->file($file_name)->move(public_path($dir_name), $new_file_name);
+                if ($request->file($file_name)->move(public_path('uploads/'.$dir_name), $new_file_name)) {
                     $uploaded_file_name = $new_file_name;
                 }
             }
@@ -1449,6 +1451,7 @@ class Util
             ->withProperties($properties)
             ->log($action);
 
+        // dd($activity,$business_id);
         $activity->business_id = $business_id;
         $activity->save();
     }
@@ -1555,7 +1558,7 @@ class Util
     public function createUser($request)
     {
         $user_details = $request->only([
-            'surname', 'first_name', 'last_name', 'email',
+            'surname', 'first_name', 'last_name', 'email','business_id',
             'user_type', 'crm_contact_id', 'allow_login', 'username', 'password',
             'cmmsn_percent', 'max_sales_discount_percent', 'dob', 'gender', 'marital_status', 'blood_group', 'contact_number', 'alt_number', 'family_number', 'fb_link',
             'twitter_link', 'social_media_1', 'social_media_2', 'custom_field_1',
@@ -1567,7 +1570,7 @@ class Util
 
         $user_details['is_enable_service_staff_pin'] = ! empty($request->input('is_enable_service_staff_pin')) ? true : false;
 
-        $business_id = Auth::user()->business_id;
+        $business_id = (Auth::user())?Auth::user()->business_id:$user_details['business_id'];
         $user_details['business_id'] = $business_id;
 
         //Check if subscribed or not, then check for users quota
@@ -1615,7 +1618,7 @@ class Util
             $role = Role::findOrFail($request->input('role'));
 
             //Remove Location permissions from role
-            $this->revokeLocationPermissionsFromRole($role);
+            $this->revokeLocationPermissionsFromRole($role,$business_id);
 
             $user->assignRole($role->name);
 
@@ -1642,6 +1645,9 @@ class Util
      */
     public function getUsernameExtension()
     {
+        if(!Auth::user()){
+            return null;
+        }
         $business_id = Auth::user()->business_id;
 
         $extension = ! empty(System::getProperty('enable_business_based_username')) ? '-'.str_pad($business_id, 2, 0, STR_PAD_LEFT) : null;
@@ -1652,13 +1658,13 @@ class Util
     /**
      * Revoke location permission from role
      */
-    public function revokeLocationPermissionsFromRole($role)
+    public function revokeLocationPermissionsFromRole($role,$business_id)
     {
         if ($role->hasPermissionTo('access_all_locations')) {
             $role->revokePermissionTo('access_all_locations');
         }
 
-        $business_id = Auth::user()->business_id;
+        // $business_id = Auth::user()->business_id;
 
         $all_locations = BusinessLocation::where('business_id', $business_id)->get();
         foreach ($all_locations as $location) {

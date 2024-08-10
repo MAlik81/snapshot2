@@ -1,8 +1,6 @@
 @extends('layouts.app')
 @section('title', __( 'user.users' ))
-
 @section('content')
-
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>@lang( 'user.users' )

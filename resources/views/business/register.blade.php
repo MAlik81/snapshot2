@@ -7,8 +7,9 @@
     <p class="form-header text-white">@lang('business.register_and_get_started_in_minutes')</p>
     {!! Form::open(['url' => route('business.postRegister'), 'method' => 'post', 
                             'id' => 'business_register_form','files' => true ]) !!}
+        
         @include('business.partials.register_form')
-        {!! Form::hidden('package_id', $package_id); !!}
+        {!! Form::hidden('package_id', $package_id) !!}
     {!! Form::close() !!}
 </div>
 @stop

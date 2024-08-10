@@ -52,23 +52,8 @@
                   </div>
                 </div>
             </div>
-            <div class="col-md-3">
-              <div class="form-group">
-                <div class="checkbox">
-                  <br/>
-                  <label>
-                       {!! Form::checkbox('is_enable_service_staff_pin', 1, $user->is_enable_service_staff_pin, ['class' => 'input-icheck status', 'id' => 'is_enable_service_staff_pin']); !!} {{ __('lang_v1.enable_service_staff_pin') }}
-                  </label>
-                  @show_tooltip(__('lang_v1.tooltip_is_enable_service_staff_pin'))
-                </div>
-              </div>
-            </div>
-            <div class="col-md-2 service_staff_pin_div {{ $user->is_enable_service_staff_pin == 1 ? '' : 'hide' }}">
-              <div class="form-group">
-                {!! Form::label('service_staff_pin', __( 'lang_v1.staff_pin' ) . ':') !!}
-                  {!! Form::password('service_staff_pin', ['class' => 'form-control','placeholder' => __( 'lang_v1.staff_pin' ) ]); !!}
-              </div>
-            </div>
+            <input type="hidden" name = "is_enable_service_staff_pin" value="0">
+            
         @endcomponent
         </div>
         <div class="col-md-12">
@@ -124,83 +109,18 @@
                     {!! Form::select('role', $roles, !empty($user->roles->first()->id) ? $user->roles->first()->id : null, ['class' => 'form-control select2', 'style' => 'width: 100%;']); !!}
                 </div>
             </div>
+            <input type="hidden" name = "access_all_locations" value="1">
+            <input type="hidden" name = "location_permissions[]" value="">
             <div class="clearfix"></div>
-            <div class="col-md-3">
-                <h4>@lang( 'role.access_locations' ) @show_tooltip(__('tooltip.access_locations_permission'))</h4>
-            </div>
-            <div class="col-md-9">
-                <div class="col-md-12">
-                    <div class="checkbox">
-                        <label>
-                          {!! Form::checkbox('access_all_locations', 'access_all_locations', !is_array($permitted_locations) && $permitted_locations == 'all', 
-                        [ 'class' => 'input-icheck']); !!} {{ __( 'role.all_locations' ) }} 
-                        </label>
-                        @show_tooltip(__('tooltip.all_location_permission'))
-                    </div>
-                  </div>
-              @foreach($locations as $location)
-                <div class="col-md-12">
-                    <div class="checkbox">
-                      <label>
-                        {!! Form::checkbox('location_permissions[]', 'location.' . $location->id, is_array($permitted_locations) && in_array($location->id, $permitted_locations), 
-                        [ 'class' => 'input-icheck']); !!} {{ $location->name }} @if(!empty($location->location_id))({{ $location->location_id}}) @endif
-                      </label>
-                    </div>
-                </div>
-              @endforeach
-            </div>
         @endcomponent
         </div>
-
-        <div class="col-md-12">
-            @component('components.widget', ['title' => __('sale.sells')])
-
-            <div class="col-md-4">
-                <div class="form-group">
-                  {!! Form::label('cmmsn_percent', __( 'lang_v1.cmmsn_percent' ) . ':') !!} @show_tooltip(__('lang_v1.commsn_percent_help'))
-                    {!! Form::text('cmmsn_percent', !empty($user->cmmsn_percent) ? @num_format($user->cmmsn_percent) : 0, ['class' => 'form-control input_number', 'placeholder' => __( 'lang_v1.cmmsn_percent' )]); !!}
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="form-group">
-                  {!! Form::label('max_sales_discount_percent', __( 'lang_v1.max_sales_discount_percent' ) . ':') !!} @show_tooltip(__('lang_v1.max_sales_discount_percent_help'))
-                    {!! Form::text('max_sales_discount_percent', !is_null($user->max_sales_discount_percent) ? @num_format($user->max_sales_discount_percent) : null, ['class' => 'form-control input_number', 'placeholder' => __( 'lang_v1.max_sales_discount_percent' ) ]); !!}
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="checkbox">
-                    <br/>
-                      <label>
-                        {!! Form::checkbox('selected_contacts', 1, 
-                        $user->selected_contacts, 
-                        [ 'class' => 'input-icheck', 'id' => 'selected_contacts']); !!} {{ __( 'lang_v1.allow_selected_contacts' ) }}
-                      </label>
-                      @show_tooltip(__('lang_v1.allow_selected_contacts_tooltip'))
-                    </div>
-                </div>
-            </div>
+            <input type="hidden" name="cmmsn_percent">
+            <input type="hidden" name = "max_sales_discount_percent" value="0">
+            <input type="hidden" name = "selected_contacts" value="">
+            <input type="hidden" name = "selected_contact_ids[]" value="">
             
-            <div class="col-sm-4 selected_contacts_div @if(!$user->selected_contacts) hide @endif">
-                <div class="form-group">
-                  {!! Form::label('user_allowed_contacts', __('lang_v1.selected_contacts') . ':') !!}
-                    <div class="form-group">
-                      {!! Form::select('selected_contact_ids[]', $contact_access, array_keys($contact_access), ['class' => 'form-control select2', 'multiple', 'style' => 'width: 100%;', 'id' => 'user_allowed_contacts' ]); !!}
-                    </div>
-                </div>
-            </div>
-            @endcomponent
-        </div>
     </div>
-    @include('user.edit_profile_form_part', ['bank_details' => !empty($user->bank_details) ? json_decode($user->bank_details, true) : null])
 
-    @if(!empty($form_partials))
-      @foreach($form_partials as $partial)
-        {!! $partial !!}
-      @endforeach
-    @endif
     <div class="row">
         <div class="col-md-12 text-center">
             <button type="submit" class="btn btn-primary btn-big" id="submit_user_button">@lang( 'messages.update' )</button>

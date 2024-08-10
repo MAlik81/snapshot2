@@ -19,7 +19,7 @@ body {
   height: 100%;
 }
 body {
-  font-family: 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Outfit';
   font-weight: 400;
   overflow-x: hidden;
   overflow-y: auto;
@@ -87,13 +87,13 @@ body {
   }
 }
 .content-wrapper {
-  min-height: calc(100vh - 101px);
+  min-height: 100vh;
   background-color: #ecf0f5;
   z-index: 800;
 }
 @media (max-width: 767px) {
   .content-wrapper {
-    min-height: calc(100vh - 151px);
+    min-height: 100vh - 151px;
   }
 }
 .main-footer {
@@ -164,7 +164,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'Outfit';
 }
 /* General Links */
 a {
@@ -303,7 +303,7 @@ a:focus {
   line-height: 50px;
   text-align: center;
   width: 230px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Outfit';
   padding: 0 15px;
   font-weight: 300;
   overflow: hidden;
