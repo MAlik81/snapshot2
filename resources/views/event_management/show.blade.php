@@ -70,6 +70,11 @@
                                             <a href="#" class="list-group-item text-center">Logo Overlay</a>
                                         @endif
                                     @endif
+                                    @if ($event_collaborator)
+                                        @if ($event_collaborator->user_type == 'commission_based_member' || $event_collaborator->user_type == 'get_what_you_sell_member')
+                                            <a href="#" class="list-group-item text-center">My Commission</a>
+                                        @endif
+                                    @endif
                                 @endif
                             </div>
                         </div>
@@ -91,6 +96,12 @@
                                 @if ($own_branding)
                                     @if (in_array('manage_overlay', $user_event_permisions))
                                         @include('event_management.partials.logo_overlay')
+                                    @endif
+                                @endif
+                                @if ($event_collaborator)
+                                        
+                                    @if ($event_collaborator->user_type == 'commission_based_member' || $event_collaborator->user_type == 'get_what_you_sell_member')
+                                        @include('event_management.partials.my_sales')
                                     @endif
                                 @endif
                             @endif

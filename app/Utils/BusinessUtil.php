@@ -45,7 +45,6 @@ class BusinessUtil extends Util
             'event.view',
             'event.create',
             'event.update',
-            'event.delete',
             'event.manage',
             'event_albums.view',
             'event_albums.create',

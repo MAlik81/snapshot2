@@ -305,7 +305,7 @@ class EventManagementController extends Controller
                 ->join('users', 'users.id', '=', 'event_collaborator.user_id')
                 ->leftJoin('collaborators_commissions', 'collaborators_commissions.collaborator_id', '=', 'event_collaborator.user_id')
                 ->where('event_collaborator.user_type', 'get_what_you_sell_member')
-                ->select('event_collaborator.*', 'users.first_name', 'users.last_name', 'users.surname', DB::raw('SUM(collaborators_commissions.collaborator_profit) as collaborator_profit'))
+                ->select('event_collaborator.*', 'users.first_name', 'users.last_name', 'users.surname', DB::raw('SUM(collaborators_commissions.platform_share) as platform_share'), DB::raw('SUM(collaborators_commissions.collaborator_profit) as collaborator_profit'))
                 ->groupBy('event_collaborator.user_id')
                 ->get();
             $event_commission_based_member = EventCollaborators::where('event_collaborator.event_id', $id)
@@ -315,6 +315,13 @@ class EventManagementController extends Controller
                 ->select('event_collaborator.*', 'users.first_name', 'users.last_name', 'users.surname', DB::raw('SUM(collaborators_commissions.collaborator_profit) as collaborator_profit'))
                 ->groupBy('event_collaborator.user_id')
                 ->get();
+                $platform_share_data = EventCollaborators::where('event_collaborator.event_id', $id)
+                ->join('users', 'users.id', '=', 'event_collaborator.user_id')
+                ->leftJoin('collaborators_commissions', 'collaborators_commissions.collaborator_id', '=', 'event_collaborator.user_id')
+                ->where('event_collaborator.user_type', 'commission_based_member')
+                ->select(DB::raw('SUM(collaborators_commissions.platform_share) as platform_share'),DB::raw('SUM(collaborators_commissions.collaborator_profit) as collaborator_profit'))
+                
+                ->get();
             $user_event_permisions = ['upload_images', 'delete_images', 'protected_images', 'manage_albums', 'manage_overlay', 'manage_promotions', 'manage_discounts', 'get_what_you_sell', 'commission_based'];
             $event_collaborator = EventCollaborators::where('event_id', $id)->where('user_id', auth()->user()->id)->first();
             if ($event_collaborator) {
@@ -323,7 +330,7 @@ class EventManagementController extends Controller
             $used_commission = EventCollaborators::where('event_id', $id)->where('event_collaborator.user_type', 'commission_based_member')->sum('commission');
             $remaining_commission = 100 - $used_commission;
             $own_branding = isset($active->package_details['own_branding']) ? $active->package_details['own_branding'] : 0;
-            return view('event_management.show', compact('event', 'albums', 'photoDiscountSetting', 'overlay', 'event_free_lancers', 'event_get_what_you_sell_member', 'event_commission_based_member', 'all_collaborators', 'own_branding', 'user_event_permisions', 'event_collaborator', 'remaining_commission'));
+            return view('event_management.show', compact('event', 'albums', 'photoDiscountSetting', 'overlay', 'event_free_lancers', 'event_get_what_you_sell_member', 'event_commission_based_member', 'all_collaborators', 'own_branding', 'user_event_permisions', 'event_collaborator', 'remaining_commission','platform_share_data'));
         } catch (\Exception $e) {
             return redirect()->back()->with('status', ['success' => 0, 'msg' => $e->getMessage()]);
         }

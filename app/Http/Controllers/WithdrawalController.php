@@ -107,8 +107,8 @@ class WithdrawalController extends Controller
     public function decline(Request $request)
     {
         if($request->ajax()){
-            $withdraw = Withdrawals::where('id',$request->input('id'))
-            ->where('status','pending')
+            $withdraw = Withdrawals::where('vendor_withdrawals.id',$request->input('id'))
+            ->where('vendor_withdrawals.status','pending')
             ->join('business', 'vendor_withdrawals.business_id', '=', 'business.id')
             ->join('users', 'business.owner_id', '=', 'users.id')
             ->select('vendor_withdrawals.*', 'business.name as business_name', 'users.email as owner_email')->first();
@@ -136,8 +136,8 @@ class WithdrawalController extends Controller
     public function approve(Request $request)
     {
         if($request->ajax()){
-            $withdraw = Withdrawals::where('id',$request->input('id'))
-            ->where('status','pending')
+            $withdraw = Withdrawals::where('vendor_withdrawals.id',$request->input('id'))
+            ->where('vendor_withdrawals.status','pending')
             ->join('business', 'vendor_withdrawals.business_id', '=', 'business.id')
             ->join('users', 'business.owner_id', '=', 'users.id')
             ->select('vendor_withdrawals.*', 'business.name as business_name', 'users.email as owner_email')->first();

@@ -37,9 +37,13 @@ class InvitationController extends Controller
 
         $token = Str::random(32);
         $expiryDate = now()->addDays(7); // Adjust the expiration period as needed
-
-
-
+        // check if email already exists in users table and in invitations table with status used
+        $user = User::where('email', $request->email)->where('business_id',$business_id)->first();
+        if($user){
+            return redirect()->back()->with('status', ['success'=>0,'msg'=>'User already exists!']);
+        }
+        // $invitation = Invitation::where('email', $request->email)->where('status', 'used')->first();
+        
         $invitation = Invitation::create([
             'business_id' => $business_id,
             'event_id' => ($request->has('event_id'))?$request->event_id:null,

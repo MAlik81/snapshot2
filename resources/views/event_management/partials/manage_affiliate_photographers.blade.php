@@ -96,7 +96,8 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Commission %</th>
-                                    <th>Profit Share</th>
+                                    <th>Collaborator Profit Share</th>
+                                    <th>Event Manager Share</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -107,6 +108,7 @@
                                         <td>{{ $user->surname }} {{ $user->first_name }} {{ $user->last_name }}</td>
                                         <td>{{ 100 - $user->commission }}%</td>
                                         <td>${{ $user->collaborator_profit ?? 0 }}</td>
+                                        <td>${{ $user->platform_share ?? 0 }}</td>
                                         <td>
                                            
                                             <button data-href="{{ action([\App\Http\Controllers\EventManagementController::class, 'getCollaborator'], ['event_id' => $event->id, 'user_id' => $user->id]) }}"
@@ -159,6 +161,16 @@
                                     </tr>
                                 @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">Total Collaborators Share</th>
+                                    <td colspan="2">${{ $platform_share_data->collaborator_profit ?? 0 }}</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="3">Total Event Manager's Share</th>
+                                    <td colspan="2">${{ $platform_share_data->platform_share ?? 0 }}</td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
